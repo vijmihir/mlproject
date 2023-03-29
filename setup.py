@@ -10,7 +10,7 @@ def get_requirements(file_path:str) -> List[str]:
     requirements = []
     with open(file_path) as file_obj:
         requirements = file_obj.readlines()
-        requirements = [req.replace("/n","")for req in requirements.txt] # Replacing /n with a blank, moving in the next line will cause this 
+        requirements = [req.replace("/n","")for req in requirements.txt] # Replacing \n with a blank, moving in the next line will cause this 
 
         # We have added '-e .' to connect the requirements file to setup.py 
         # We are just removing the '-e .'
