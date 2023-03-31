@@ -8,19 +8,18 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder  
 
-sys.path.append('/Users/mihir.vij/Desktop/mlproject')
+#sys.path.append('/Users/mihir.vij/Desktop/mlproject')
 from src.exception import CustomException
-
 from src.logger import logging
 from src.utils import save_object
 
 @dataclass # Designed to hold only data values. It is called a decorator. When we do this we do not need to write __init__ functions 
 class DataTransformationConfig:
-    preprocessor_ob_file_path = os.path.join('artifact',"preprocessor.pkl")
+    preprocessor_obj_file_path = os.path.join('artifacts',"preprocessor.pkl")
     
 
 class DataTransformation:
-    def __init__ (self):
+    def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
 
     def get_data_transformer_object(self):
@@ -49,18 +48,19 @@ class DataTransformation:
                 steps = [
                     ("imputer", SimpleImputer(strategy='most_frequent'))
                     , ("one-hot encoder", OneHotEncoder())
-                    , ("scaler", StandardScaler())
+                    , ("scaler", StandardScaler(with_mean = False))
                 ]
             )
             logging.info('Categorical and numerical columns standard scaling completed')
             preprocessor = ColumnTransformer(
                 [
                     ("numerical pipeline", numerical_pipeline, numerical_features)
-                    ("categorical pipeline", categorical_pipeline, categorical_features)
+                    , ("categorical pipeline", categorical_pipeline, categorical_features)
                 ]
             )
         
             return preprocessor 
+
         except Exception as e:
             raise CustomException(e,sys)
 
@@ -96,12 +96,12 @@ class DataTransformation:
             logging.info('save preprocessing object')
 
             save_object(
-                file_path = self.data_transformation_config.preprocessor_ob_file_path,
+                file_path = self.data_transformation_config.preprocessor_obj_file_path,
                 obj = preprocessor_obj
 
             )
-            return {
-                train_arr, test_arr, self.data_transformation_config.preprocessor_ob_file_path
-            }
+            return (
+                train_arr, test_arr, self.data_transformation_config.preprocessor_obj_file_path
+            )
         except Exception as e:
             raise CustomException(e,sys)
